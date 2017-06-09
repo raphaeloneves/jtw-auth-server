@@ -15,14 +15,14 @@ import java.util.*;
 public class JwtUtil {
 
     private static final String key = "5jifF5W18ml6pHC8WY3pkD";
-    public static final String TOKEN_HEADER = "Authentication";
     private static final int TOKEN_EXPIRATION = 10;
 
     public static String createToken(User user, String issuer){
         Date now = new Date();
-        return Jwts.builder().setSubject(user.getId())
+        return Jwts.builder().setSubject(user.getUsername())
                 .setIssuer(issuer)
                 .setIssuedAt(now)
+                .setId(user.getId().toString())
                 .setExpiration(getExpirationDate(now))
                 .signWith(SignatureAlgorithm.HS512, key)
                 .compact();

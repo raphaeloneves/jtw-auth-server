@@ -3,18 +3,16 @@ package br.com.raphaelneves.models;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class User implements Principal{
 
-    private String id;
+    private Long id;
     private String name;
     private String username;
     private String password;
     private List<Role> roles;
 
     public User(){
-        id = UUID.randomUUID().toString();
         roles = new ArrayList<Role>();
     }
 
@@ -63,11 +61,11 @@ public class User implements Principal{
         this.roles = roles;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 }

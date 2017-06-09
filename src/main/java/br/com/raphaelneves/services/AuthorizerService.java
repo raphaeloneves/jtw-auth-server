@@ -23,11 +23,15 @@ public class AuthorizerService implements SecurityContext {
     }
 
     public Principal getUserPrincipal() {
-        return user;
+        if (user != null)
+            return user;
+        return null;
     }
 
-    public boolean isUserInRole(String s) {
-        return roles.contains(new Role(s));
+    public boolean isUserInRole(String role) {
+        if (roles != null)
+            return roles.contains(new Role(role));
+        return false;
     }
 
     public boolean isSecure() {

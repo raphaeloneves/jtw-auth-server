@@ -16,6 +16,7 @@ public class UserRepository {
 
     private void createUserMock(){
         User usr = new User();
+        usr.setId(1L);
         usr.setName("Administrator");
         usr.setPassword("admin");
         usr.setUsername("admin");
@@ -24,6 +25,7 @@ public class UserRepository {
         users.add(usr);
 
         User usr1 = new User();
+        usr1.setId(2L);
         usr1.setName("Guest");
         usr1.setPassword("guest");
         usr1.setUsername("guest");
@@ -40,7 +42,7 @@ public class UserRepository {
         return user;
     }
 
-    public User find(String id){
+    public User find(Long id){
         User user = new User();
         user.setId(id);
         if(users.contains(user)){

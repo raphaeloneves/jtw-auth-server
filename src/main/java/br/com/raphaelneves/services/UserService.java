@@ -25,7 +25,7 @@ public class UserService {
         return logged;
     }
 
-    public User find(String id){
+    public User find(Long id){
         return userRepository.find(id);
     }
 
