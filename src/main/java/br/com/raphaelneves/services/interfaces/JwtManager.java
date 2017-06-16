@@ -1,6 +1,7 @@
 package br.com.raphaelneves.services.interfaces;
 
 import br.com.raphaelneves.models.User;
+import br.com.raphaelneves.models.UserLogged;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 
@@ -13,7 +14,7 @@ import java.util.Date;
 @Local
 public interface JwtManager {
 
-    String create(User user, String issuer);
+    UserLogged create(User user, String issuer);
     Jws<Claims> decode(String token);
     String extract(String header);
     void revoke(String token);

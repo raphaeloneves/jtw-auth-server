@@ -1,6 +1,7 @@
 package br.com.raphaelneves.services;
 
 import br.com.raphaelneves.models.User;
+import br.com.raphaelneves.models.UserLogged;
 import br.com.raphaelneves.services.interfaces.JwtConfiguration;
 import br.com.raphaelneves.services.interfaces.JwtManager;
 import br.com.raphaelneves.utils.PropertieLoader;
@@ -30,14 +31,15 @@ public class JwtService implements JwtManager, JwtConfiguration {
     }
 
     @Override
-    public String create(User user, String issuer) {
+    public UserLogged create(User user, String issuer) {
         Date now = new Date();
-        return Jwts.builder().setSubject(user.getUsername())
+        String token = Jwts.builder().setSubject(user.getUsername())
                 .setIssuer(issuer)
                 .setId(user.getId().toString())
                 .setExpiration(generateExpirationDate(now))
                 .signWith(SignatureAlgorithm.HS512, key)
                 .compact();
+        return new UserLogged(user.getUsername(), token, now, decode(token).getBody().getExpiration());
     }
 
     @Override

@@ -22,12 +22,9 @@ public class UserService {
 
     public UserLogged login(User usr, UriInfo uriInfo){
         User user = userRepository.auth(usr);
-        UserLogged logged = null;
-        if(user != null){
-            String token = jwt.create(user, uriInfo.getAbsolutePath().toString());
-            logged = new UserLogged(user.getUsername(), token, new Date(), jwt.decode(token).getBody().getExpiration());
-        }
-        return logged;
+        if(user != null)
+            return jwt.create(user, uriInfo.getAbsolutePath().toString());
+        return null;
     }
 
     public User find(Long id){
