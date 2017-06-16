@@ -14,19 +14,17 @@ public class PropertieLoader {
 
     public PropertieLoader(String propertieFileName){
         properties = new Properties();
-        stream = Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream(propertieFileName);
+        InputStream is = null;
         try{
-            properties.load(stream);
-            stream.close();
+            is = Thread.currentThread().getContextClassLoader().getResourceAsStream(propertieFileName);
+            properties.load(is);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public String getPropertie(String propertie){
+    public Object get(String propertie){
         return properties.getProperty(propertie);
     }
-
 
 }

@@ -1,6 +1,6 @@
 package br.com.raphaelneves.filters;
 
-import br.com.raphaelneves.annotations.Jwt;
+import br.com.raphaelneves.annotations.JwtFilter;
 
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
@@ -13,7 +13,7 @@ import java.io.IOException;
 /**
  * Created by raphaeloneves on 09/06/2017.
  */
-@Jwt
+@JwtFilter
 @Provider
 @Priority(Priorities.AUTHENTICATION)
 public class JwtResponseFilter implements ContainerResponseFilter {

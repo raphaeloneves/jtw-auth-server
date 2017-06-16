@@ -8,37 +8,40 @@ import java.security.Principal;
 import java.util.List;
 
 /**
- * Created by raphaeloneves on 09/06/2017.
+ * Created by raphaeloneves on 13/06/2017.
  */
-public class AuthorizerService implements SecurityContext {
+public class Authorizer implements SecurityContext {
 
-    private List<Role> roles;
     private User user;
+    private List<Role> roles;
     private boolean isSecure;
+    private static final String AUTHENTICATION_SCHEME = "JWT";
 
-    public AuthorizerService(List<Role> roles, User user, boolean isSecure) {
-        this.roles = roles;
+    public Authorizer(User user, List<Role> roles, boolean isSecure) {
         this.user = user;
+        this.roles = roles;
         this.isSecure = isSecure;
     }
 
+    @Override
     public Principal getUserPrincipal() {
-        if (user != null)
-            return user;
-        return null;
+        return user;
     }
 
+    @Override
     public boolean isUserInRole(String role) {
-        if (roles != null)
+        if(role != null)
             return roles.contains(new Role(role));
         return false;
     }
 
+    @Override
     public boolean isSecure() {
         return isSecure;
     }
 
+    @Override
     public String getAuthenticationScheme() {
-        return "JWT";
+        return AUTHENTICATION_SCHEME;
     }
 }

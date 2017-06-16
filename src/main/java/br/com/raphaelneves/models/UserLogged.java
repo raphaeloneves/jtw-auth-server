@@ -9,11 +9,21 @@ public class UserLogged {
     private String username;
     private String token;
     private Date lastLogin;
+    private Date expiresAt;
 
-    public UserLogged(String username, String token, Date lastLogin) {
+    public UserLogged(String username, String token, Date lastLogin, Date expiresAt) {
         this.username = username;
         this.token = token;
         this.lastLogin = lastLogin;
+        this.expiresAt = expiresAt;
+    }
+
+    public Date getExpiresAt() {
+        return expiresAt;
+    }
+
+    public void setExpiresAt(Date expiresAt) {
+        this.expiresAt = expiresAt;
     }
 
     public UserLogged(){}

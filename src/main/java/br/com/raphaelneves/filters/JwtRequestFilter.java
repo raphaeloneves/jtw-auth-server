@@ -1,73 +1,53 @@
+
 package br.com.raphaelneves.filters;
 
-import br.com.raphaelneves.annotations.Jwt;
+import br.com.raphaelneves.annotations.JwtFilter;
 import br.com.raphaelneves.models.User;
-import br.com.raphaelneves.services.AuthorizerService;
+import br.com.raphaelneves.repositories.UserRepository;
+import br.com.raphaelneves.services.Authorizer;
 import br.com.raphaelneves.services.UserService;
-import br.com.raphaelneves.utils.JwtUtil;
+import br.com.raphaelneves.services.interfaces.JwtManager;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.JwtException;
 
 import javax.annotation.Priority;
+import javax.ejb.EJB;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
-import java.util.Date;
 
-@Jwt
+@JwtFilter
 @Provider
 @Priority(Priorities.AUTHENTICATION)
 public class JwtRequestFilter implements ContainerRequestFilter{
 
-    private UserService userService = new UserService();
+    @EJB
+    private UserRepository repository;
+
+    @EJB
+    private JwtManager jwt;
     private ContainerRequestContext requestContext;
+    private SecurityContext originalContext;
 
     public void filter(ContainerRequestContext requestContext) {
         this.requestContext = requestContext;
-        SecurityContext originalContext = requestContext.getSecurityContext();
+        originalContext = requestContext.getSecurityContext();
         String header = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
 
-        if(header == null || header.split(" ").length != 2 || !header.startsWith("Bearer ")){
-            requestContext.setSecurityContext(new AuthorizerService(null, null, originalContext.isSecure()));
+        if(header == null || header.split(" ").length != 2 || !header.startsWith(jwt.getAuthenticationPrefix())){
+            requestContext.setSecurityContext(new Authorizer(null, null, originalContext.isSecure()));
         }else{
-            String token = JwtUtil.extractToken(header);
-            Jws<Claims> claims = decodeToken(token);
-            verifyTokenExirationDate(claims.getBody());
-            requestContext.setSecurityContext(validateUserByToken(Long.valueOf(claims.getBody().getId()), originalContext));
+            Jws<Claims> claims = jwt.decode(jwt.extract(header));
+            requestContext.setSecurityContext(validateUserByToken(Long.valueOf(claims.getBody().getId())));
         }
     }
 
-    private void invalidateAccess() {
-        requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
-    }
-
-    private void verifyTokenExirationDate(Claims claims){
-        if(new Date().after(claims.getExpiration())){
-            throw new JwtException("Token has expired in " + claims.getExpiration());
-        }
-    }
-
-    private User getUserByClaimId(Long id){
-        return userService.find(id);
-    }
-
-    private Jws<Claims> decodeToken(String token){
-        Jws<Claims> claimsJws = null;
-        try{
-            claimsJws = JwtUtil.decodeToken(token);
-        }catch (Exception e){
-            invalidateAccess();
-        }
-        return claimsJws;
-    }
-
-    private AuthorizerService validateUserByToken(Long id, SecurityContext context){
-        User user = getUserByClaimId(id);
-        return new AuthorizerService(user.getRoles(), user, context.isSecure());
+    private Authorizer validateUserByToken(Long id){
+        User user = repository.find(id);
+        return new Authorizer(user, user.getRoles(), originalContext.isSecure());
     }
 }
+
